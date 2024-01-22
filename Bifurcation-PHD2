@@ -1,0 +1,107 @@
+%This code i s used for both backward and forward b i fur c a t i on .
+% To plot the backward bifurcation , the user must comment %the forward bifurcation parameters and
+%uncomment the backward bifurcation ones .
+Pi    = 13942;
+gamma1= 0.0715;
+gamma2= 0.0715;
+psi1  = 0.1429;
+psi2  = 0.1429;
+psi3  = 0.0714;
+theta = 0.5000;
+m     = 0.2726;
+alpha = 0.9973;
+rho   = 0.1083;
+delta1= 0.2843;
+delta2= 0.3310;
+delta12=0.4131;
+delta21= 0.4131;
+tau1   = 0.2951;
+tau2   = 0.0096;
+sigma  = 0.4685;
+%beta1  = 4.6935;
+beta2  = 4.1196;
+epsilon1= 0.4750;
+epsilon2= 0.3715;
+mu      = 0.5085;
+
+beta1  = 4;% backward bifurcation 75
+%bmax = 10% forward bifurcation 4
+
+rend =100000;
+rlst =linspace(0,2,rend) ;
+mylist1=zeros(1,length(rlst));
+mylist2=zeros(1,length(rlst));
+mylist3=zeros(1,length(rlst)) ;
+
+k1= gamma1 + mu ;
+k2= tau1 + delta1 + psi1 + mu;
+k3= gamma2 + mu;
+k4= tau2 + delta2 + psi2 + mu;
+k5= psi3 + delta12 + mu; % Naive strain
+%k5= psi3  + delta21 + mu; % Dominant strain
+
+for i =1 : 1 : rend
+r= rlst(i) ;
+% Ao, A1 , A2 , A3 are the  coefficients of the polynomial obtained t the
+% endemic equi l ibr ium point E*
+%Ao =    5;
+A1 = k5*sigma*gamma1*(rho*sigma + alpha + psi1)+sigma*k2*k5*(m+mu)+sigma*gamma1*tau1*(m+mu+psi2);
+A2= gamma1*(rho*sigma + alpha+mu)*(k5*(m + mu + psi1) + tau1*(m + mu +psi2)) + k2*k5*(rho*sigma + k1*sigma + alpha)*(m + mu) - beta1*gamma1*(m + mu)*sigma*(epsilon1*tau1 + k5);
+A3 = k1*k2*k5*(m + mu)*(mu + alpha + rho)*(1-r );
+
+mypoly=[A1 ,A2 ,A3 ] ;
+sol=roots(mypoly); % we plot the roots (sol) of the polynomial mypoly
+mylist1 (i)=sol(1) ;
+mylist2 (i)=sol(2);
+%mylist3 (i)=sol(3) ;
+% we replace negative roots by zero and only store the real positive
+% roots into mylist
+if imag(mylist1(i))~=0
+mylist1(i)=0 ;
+else
+mylist1(i)=max(0,mylist1(i));
+end
+if imag(mylist2(i))~=0
+mylist2(i)=0 ;
+else
+mylist2(i)=max(0,mylist2(i));
+end
+if imag(mylist3(i))~=0
+mylist3(i)=0 ;
+else
+mylist3(i)=max(0,mylist3(i)) ;
+end
+end
+% we determine the number i from the r l i s t for each func t ion myl i s t
+% where the root of the polynomial is real and posit iv e .
+lstpos=find(mylist1~=0) ;
+index1=min(lstpos) ;
+index2=max(lstpos) ;
+mlstpos=find(mylist2~=0) ;
+index3=min(mlstpos) ;
+index4=max(mlstpos) ;
+vlstpos=find(mylist3~=0) ;
+index5=min(vlstpos);
+index6=max(vlstpos) ;
+% we formulate the disease free equilibrium lines on the x- axis
+s=linspace(0,1,rend) ;
+z= linspace(1,2,rend) ;
+y1= + 0*s ;
+y2= + 0*z ;
+%axis([0.3 ,2,0,5]) % backward bifurcation
+axis([0.7,1.8,0,1])% forward bifurcation
+hold on
+%we plot the positive  roots of the polynomial
+%plot (rlst(index1 : index2), mylist1(index1 : index2),' b-',...
+%rlst(index3 : index4), mylist2(index3 : index4 ), ' r--',...
+%rlst(index5:index6),mylist3(index5 : index6),' r--', 'linewidth',2)%bacward
+%bifurcation
+plot(rlst(index1 : index2),mylist1(index1 : index2), ' b-',...
+rlst(index3:index4),mylist2(index3 : index4),' b-',...
+rlst(index5:index6),mylist3(index5:index6),' r--','linewidth',2)% forward
+plot(s,y1,' b-')
+plot(z,y2,'r--')
+xlimit([0.2,1.8])
+xlabel('Reproduction number Rh')
+ylabel('Infected population size I(t)')
+hold off
